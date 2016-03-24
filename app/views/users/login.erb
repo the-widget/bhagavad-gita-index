@@ -1,0 +1,14 @@
+<h1>Login Page</h1>
+
+<% unless locals.empty? %>
+  <%= message %>
+<% end %>
+
+<form method="post" action='/login'>
+  Username: <input required type="text" id="username" name="username"><br><br>
+  Password: <input required type="password" id="password" name="password"><br><br>
+  <input type="submit" id="submit" value="Login">
+</form><br>
+
+Need an account?
+  <a href="signup"><input type="submit" value="Sign Up"></a>
