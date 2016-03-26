@@ -1,0 +1,43 @@
+<h1>Verse Edit Page</h1>
+
+<form method="post" action="/verse">
+  <h4>Chapter:</h4>  <select name="verse[chapter]">
+  <option value="0">- Select A Chapter -</option>
+  <option <%='selected' if @verse.chapter == 1%> value="1">Chapter One: Observing the Armies on the Battleﬁeld of Kurukṣetra</option>
+  <option <%='selected' if @verse.chapter == 2%> value="2">Chapter Two: Contents of the Gītā Summarized</option>
+  <option <%='selected' if @verse.chapter == 3%> value="3">Chapter Three: Karma-yoga</option>
+  <option <%='selected' if @verse.chapter == 4%> value="4">Chapter Four: Transcendental Knowledge</option>
+  <option <%='selected' if @verse.chapter == 5%> value="5">Chapter Five: Karma-yoga – Action in Kṛṣṇa Consciousness</option>
+  <option <%='selected' if @verse.chapter == 6%> value="6">Chapter Six: Dhyāna-yoga</option>
+  <option <%='selected' if @verse.chapter == 7%> value="7">Chapter Seven: Knowledge of the Absolute</option>
+  <option <%='selected' if @verse.chapter == 8%> value="8">Chapter Eight: Attaining the Supreme</option>
+  <option <%='selected' if @verse.chapter == 9%> value="9">Chapter Nine: The Most Conﬁdential Knowledge</option>
+  <option <%='selected' if @verse.chapter == 10%> value="10">Chapter Ten: The Opulence of the Absolute</option>
+  <option <%='selected' if @verse.chapter == 11%> value="11">Chapter Eleven: The Universal Form</option>
+  <option <%='selected' if @verse.chapter == 12%> value="12">Chapter Twelve: Devotional Service</option>
+  <option <%='selected' if @verse.chapter == 13%> value="13">Chapter Thirteen: Nature, the Enjoyer and Consciousness</option>
+  <option <%='selected' if @verse.chapter == 14%> value="14">Chapter Fourteen: The Three Modes of Material Nature</option>
+  <option <%='selected' if @verse.chapter == 15%> value="15">Chapter Fifteen: The Yoga of the Supreme Person</option>
+  <option <%='selected' if @verse.chapter == 16%> value="16">Chapter Sixteen: The Divine and Demoniac Natures</option>
+  <option <%='selected' if @verse.chapter == 17%> value="17">Chapter Seventeen: The Divisions of Faith</option>
+  <option <%='selected' if @verse.chapter == 18%> value="18">Chapter Eighteen: Conclusion – The Perfection of Renunciation</option>
+</select><br><br>
+
+
+ <h4>Verse:</h4>   <input required type="number" name="verse[sloka]" min="1" max="78" value="<%=@verse.verse%>"><br><br>
+
+  <h4>Content:</h4> 
+  <textarea required rows="5" cols="40" name="verse[content]" placeholder="Paste Translation Here:"><%=@verse.content%></textarea>
+
+  <h4>Topics:</h4>
+  <% @topics.each do |t| %>
+    <p><input type="checkbox" value="<%=t.id%>" name="verse[topic_ids][]" <%= 'checked' if @verse.topics.ids.include?(t.id)%>><%=t.name%></input></p>
+  <% end %>
+
+  <h4>Create New Topic:</h4>
+  <input type="text" size="30" name="new_topic"><br><br>
+
+  <h1><input type="submit" id="submit" value="Save Changes"></h1>
+
+
+</form>

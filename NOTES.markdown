@@ -26,6 +26,10 @@ Database:
     - topic_id 
     - verse_id
 
+  Table UserTopics
+    - user_id
+    - topic_id
+
 Models:
 
 User
@@ -43,3 +47,10 @@ Verse
 TopicVerse
   - belongs_to topic
   - belongs_to verse
+
+UserTopics
+  - belongs_to user
+  - belongs_to topics
+
+
+  

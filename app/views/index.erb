@@ -1,4 +1,15 @@
-<h1>Index Page</h1>
-Logged In As: <%=User.find(session[:user_id]).username%> <br>
+<h1><a href="/"><img src="https://farm2.staticflickr.com/1630/26010974126_687be28542.jpg"></a></h1>
+<% unless locals.empty? %>
+  <%= message %>
+<% end %>
 
+<a href="/topics/new"><input type="submit" value="New Topic"></a>
+<a href="/verses/new"><input type="submit" value="New Verse"></a>
 <a href="logout"><input type="submit" value="Log Out"></a>
+
+<h2>Featured Topics:</h2>
+<% @topics.each do |t| %>
+  <h4><a href="/topics/<%=t.slug%>/show"><%= t.name %></a></h4>
+<% end %>
+
+Logged In As: <%=User.find(session[:user_id]).username%> <br>

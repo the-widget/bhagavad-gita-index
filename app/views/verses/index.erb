@@ -1,0 +1,10 @@
+<h1>Index of All Saved Verses Sorted By Chapter and Chapter Themes</h1>
+
+<%@verses.each do |verse|%>
+  <a href="verses/<%=verse.id%>/show"><h2><%=verse.location%></h2></a>
+  <h3><%= verse.content %></h3>
+  Topics:
+  <%verse.topics.each do |t|%>
+    <a href="topics/<%=t.slug%>/show"><%=t.name%></a>
+  <% end %>
+<% end %>

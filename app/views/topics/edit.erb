@@ -1,0 +1,13 @@
+<h1>Edit Topic</h1>
+
+<form method="post" action="/topics/<%=@topic.slug%>">
+  <h4>Topic Name: <input type="text" size="30" name="topic[name]" value="<%=@topic.name%>"></h4>
+
+  <h4>Associated Verses:</h4>
+  <% @verses.each do |v| %>
+    <p><input type="checkbox" value="<%=v.id%>" name="topic[verse_ids][]" <%='checked' if @topic.verses.ids.include?(v.id)%>>  Chapter <%=v.chapter%> : Verse <%=v.verse%> - <%=v.chapter_name%> </input></p>
+  <% end %> <br><br>
+
+  <input id="hidden" type="hidden" name="_method" value="patch">
+  <input type="submit" id="submit" value="Save Changes">
+</form>

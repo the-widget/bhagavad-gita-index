@@ -1,0 +1,43 @@
+<h1>New Verse w/ check boxes for topics -or- Create Topic Form</h1>
+
+<form method="post" action="/verse">
+  <h4>Chapter:</h4>  <select name="verse[chapter]">
+  <option value="0">- Select A Chapter -</option>
+  <option value="1">Chapter One: Observing the Armies on the Battleﬁeld of Kurukṣetra</option>
+  <option value="2">Chapter Two: Contents of the Gītā Summarized</option>
+  <option value="3">Chapter Three: Karma-yoga</option>
+  <option value="4">Chapter Four: Transcendental Knowledge</option>
+  <option value="5">Chapter Five: Karma-yoga – Action in Kṛṣṇa Consciousness</option>
+  <option value="6">Chapter Six: Dhyāna-yoga</option>
+  <option value="7">Chapter Seven: Knowledge of the Absolute</option>
+  <option value="8">Chapter Eight: Attaining the Supreme</option>
+  <option value="9">Chapter Nine: The Most Conﬁdential Knowledge</option>
+  <option value="10">Chapter Ten: The Opulence of the Absolute</option>
+  <option value="11">Chapter Eleven: The Universal Form</option>
+  <option value="12">Chapter Twelve: Devotional Service</option>
+  <option value="13">Chapter Thirteen: Nature, the Enjoyer and Consciousness</option>
+  <option value="14">Chapter Fourteen: The Three Modes of Material Nature</option>
+  <option value="15">Chapter Fifteen: The Yoga of the Supreme Person</option>
+  <option value="16">Chapter Sixteen: The Divine and Demoniac Natures</option>
+  <option value="17">Chapter Seventeen: The Divisions of Faith</option>
+  <option value="18">Chapter Eighteen: Conclusion – The Perfection of Renunciation</option>
+</select><br><br>
+
+
+ <h4>Verse:</h4>   <input required type="number" name="verse[sloka]" min="1" max="78"><br><br>
+
+  <h4>Content:</h4> 
+  <textarea required rows="5" cols="40" name="verse[content]" placeholder="Paste Translation Here:"></textarea>
+
+  <h4>Topics:</h4>
+  <% @topics.each do |t| %>
+    <p><input type="checkbox" value="<%=t.id%>" name="verse[topic_ids][]"><%=t.name%></input></p>
+  <% end %> <br><br>
+
+  <h4>Create New Topic:</h4>
+  <input type="text" size="30" name="new_topic">
+
+  <input type="submit" id="submit" value="Create!">
+
+
+</form>

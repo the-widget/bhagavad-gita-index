@@ -1,0 +1,7 @@
+<h1>Show Individual Topics w/ Verses</h1>
+<a href="/topics/<%=@topic.slug%>/edit"><input type="submit" value="Edit Topic"></a>
+<h1><%= @topic.name %></h1>
+<% @verses.each do |verse| %>
+  <a href="/verses/<%=verse.id%>/show"><h2><%=verse.location%></h2></a>
+  <h3><%= verse.content %></h3>
+<% end %>

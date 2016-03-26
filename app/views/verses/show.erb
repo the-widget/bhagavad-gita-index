@@ -1,0 +1,17 @@
+<h1>Topics:</h1> <h1><% @verse.topics.each do |t| %>
+  <a href="/topics/<%=t.slug%>/show">[<%= t.name %>]</a>
+<% end %></h1> 
+<a href="/verses/<%=@verse.id%>/edit"><input type="submit" value="Edit Verse"></a>
+<h2>Chapter <%= @verse.chapter %>: <%= @verse.chapter_name %> <br> Verse: <%= @verse.verse %></h2>
+<h3><%= @verse.content%></h3>
+
+
+
+
+
+<a href="#" id="show_id" onclick="document.getElementById('spoiler_id').style.display=''; document.getElementById('show_id').style.display='none';" class="link">[Full View w/ Sanskrit, English Diacritics, Word-for-Word Translation & Purport]</a>
+  <span id="spoiler_id" style="display: none"><a href="#" onclick="document.getElementById('spoiler_id').style.display='none'; document.getElementById('show_id').style.display='';" class="link">[Hide]</a><br>
+    <div id="purport"> 
+      <object type="text/html" data="http://www.vedabase.com/en/bg/<%=@verse.chapter%>/<%=@verse.verse%>" width="800px" height="800px" style="overflow:auto;border:5px ridge blue"></object>
+    </div>
+  </span>
