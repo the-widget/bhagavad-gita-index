@@ -1,7 +1,29 @@
-<h1>Show Individual Topics w/ Verses</h1>
-<a href="/topics/<%=@topic.slug%>/edit"><input type="submit" value="Edit Topic"></a>
+<h1><a href="/"><img src="https://farm2.staticflickr.com/1630/26010974126_687be28542.jpg"></a></h1>
+
 <h1><%= @topic.name %></h1>
+<p>Contributors: 
+  <% @topic.users.each do |user| %>
+    <b>@<%=user.username%></b>
+  <% end %>
+</p>
+<form method="post" action="/topic/<%=@topic.slug%>/authorization"><a href="/verses/new"><input type="<%= is_logged_in ? 'submit' : 'hidden' %>" value="Request Permission To Contribute To This Topic"></a></form>
+<h5><%= @message %></h5>
+
+<!--  Nav Buttons -->
+<a href="/topics/<%=@topic.slug%>/edit"><input type="<%= is_logged_in ? 'submit' : 'hidden' %>" value="Edit Topic"></a>  <a href="/topics/new"><input type="<%= is_logged_in ? 'submit' : 'hidden' %>" value="Create New Topic"></a>  <a href="/topics/<%=@topic.slug%>/add_verse"><input type="<%= is_logged_in ? 'submit' : 'hidden' %>" value="Add New Verse To This Topic"></a>  <a href="/topics"><input type="<%= is_logged_in ? 'submit' : 'hidden' %>" value="See All Topics"></a>
+
+<!--  All Associated Verses  -->
 <% @verses.each do |verse| %>
-  <a href="/verses/<%=verse.id%>/show"><h2><%=verse.location%></h2></a>
-  <h3><%= verse.content %></h3>
+  <br><br><a href="/verses/<%=verse.id%>/show" style="text-decoration: none"><h3>Chapter <%= verse.chapter %>: <%= verse.chapter_name %> - Text <%= verse.verse %></h3></a>
+  "<i><b><%= verse.content%></b></i>"<br><br>
+
+
+ <!--  Pop-up Window  -->
+<a href="#" id="show_id" onclick="document.getElementById('spoiler_id').style.display=''; document.getElementById('show_id').style.display='none';" class="link">[Full View w/ Sanskrit, English Diacritics, Word-for-Word Translation & Purport]</a>
+  <span id="spoiler_id" style="display: none"><a href="#" onclick="document.getElementById('spoiler_id').style.display='none'; document.getElementById('show_id').style.display='';" class="link">[Hide]</a><br>
+    <div id="purport"> 
+      <object type="text/html" data="http://www.vedabase.com/en/bg/<%=verse.chapter%>/<%=verse.verse%>" width="800px" height="800px" style="overflow:auto;border:5px ridge blue"></object>
+    </div>
+  </span><br>
+    ---------------------------------------------------------------------------------------------------
 <% end %>

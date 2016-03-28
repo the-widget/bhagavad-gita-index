@@ -1,8 +1,8 @@
 <h1><a href="/"><img src="https://farm2.staticflickr.com/1630/26010974126_687be28542.jpg"></a></h1>
+<h1>Add Verse To: '<%=@topic.name%>'</h1>
+<h4><%=@message%></h4>
 
-<h1>Create New Verse</h1>
-  <h4><%=@message%></h4>
-<form method="post" action="/verse">
+<form method="post" action="/topics/<%=@topic.slug%>/add_verse">
   <h4>Chapter:</h4>  <select required name="verse[chapter]">
   <option value="">- Select A Chapter -</option>
   <option value="1">Chapter One: Observing the Armies on the Battleﬁeld of Kurukṣetra</option>
@@ -31,14 +31,6 @@
   <h4>Content: *<a href="http://www.vedabase.com/en/bg" target="_blank">Find Your Translation Here</a></h4> 
   <textarea required rows="5" cols="40" name="verse[content]" placeholder="Paste Translation Here:"></textarea>
 
-  <h4>Topics:</h4>
-  <% @topics.each do |t| %>
-    <p><input type="checkbox" value="<%=t.id%>" name="verse[topic_ids][]"><%=t.name%> <i><%="*Not Authorized To Edit*" if !t.users.include?(current_user)%></i></input></p>
-  <% end %>
- <i> *Unauthorized edits will not be saved*</i>
-
-  <h4>Associate New Topic:</h4>
-  Topic: <input type="text" size="30" name="new_topic">
-
-  <br><br><input type="submit" id="submit" value="Create!">
-</form>
+  <br><br> <input type="submit" id="submit" value="Add Verse">
+</form><br>
+<a href="/topics/<%=@topic.slug%>/show"><input type="submit" id="submit" value="Back To Topic"></a><br><br>

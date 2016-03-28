@@ -53,4 +53,6 @@ UserTopics
   - belongs_to topics
 
 
+User can get permission to edit community files.
+
   

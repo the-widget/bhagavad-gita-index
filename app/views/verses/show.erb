@@ -1,13 +1,12 @@
-<h1>Topics:</h1> <h1><% @verse.topics.each do |t| %>
-  <a href="/topics/<%=t.slug%>/show">[<%= t.name %>]</a>
-<% end %></h1> 
-<a href="/verses/<%=@verse.id%>/edit"><input type="submit" value="Edit Verse"></a>
-<h2>Chapter <%= @verse.chapter %>: <%= @verse.chapter_name %> <br> Verse: <%= @verse.verse %></h2>
-<h3><%= @verse.content%></h3>
+<h1><a href="/"><img src="https://farm2.staticflickr.com/1630/26010974126_687be28542.jpg"></a></h1>
 
+<h2>Chapter <%= @verse.chapter %>: <%= @verse.chapter_name %> <br> Text <%= @verse.verse %></h2>
+<a href="/verses/<%=@verse.id%>/edit"><input type="<%= is_logged_in ? 'submit' : 'hidden' %>" value="Edit Verse"></a>  <a href="/verses"><input type="submit" value="Back to All Verses"></a>
 
-
-
+<br><br>
+<h3><i><b>"<%= @verse.content%>"</b></i></h3>
+<%= @message %>
+<br>
 
 <a href="#" id="show_id" onclick="document.getElementById('spoiler_id').style.display=''; document.getElementById('show_id').style.display='none';" class="link">[Full View w/ Sanskrit, English Diacritics, Word-for-Word Translation & Purport]</a>
   <span id="spoiler_id" style="display: none"><a href="#" onclick="document.getElementById('spoiler_id').style.display='none'; document.getElementById('show_id').style.display='';" class="link">[Hide]</a><br>
@@ -15,3 +14,13 @@
       <object type="text/html" data="http://www.vedabase.com/en/bg/<%=@verse.chapter%>/<%=@verse.verse%>" width="800px" height="800px" style="overflow:auto;border:5px ridge blue"></object>
     </div>
   </span>
+
+<h3>Topics:</h3> <p><% @verse.topics.each do |t| %>
+  <a href="/topics/<%=t.slug%>/show"><%= t.name %></a>
+<% end %></p><br>
+
+
+
+
+
+

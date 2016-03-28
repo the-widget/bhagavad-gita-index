@@ -1,6 +1,9 @@
-<h1>Verse Edit Page</h1>
+<h1><a href="/"><img src="https://farm2.staticflickr.com/1630/26010974126_687be28542.jpg"></a></h1>
 
-<form method="post" action="/verse">
+<h1>Edit Verse <%=@verse.location%></h1>
+
+<form method="post" action="/verse/<%=@verse.id%>">
+  <input type="hidden" name="_method" value="patch">
   <h4>Chapter:</h4>  <select name="verse[chapter]">
   <option value="0">- Select A Chapter -</option>
   <option <%='selected' if @verse.chapter == 1%> value="1">Chapter One: Observing the Armies on the Battleﬁeld of Kurukṣetra</option>
@@ -26,18 +29,24 @@
 
  <h4>Verse:</h4>   <input required type="number" name="verse[sloka]" min="1" max="78" value="<%=@verse.verse%>"><br><br>
 
-  <h4>Content:</h4> 
+  <h4>Content: *<a href="http://www.vedabase.com/en/bg/<%=@verse.chapter%>/<%=@verse.verse%>" target="_blank">Find Your Translation Here</a></h4> 
   <textarea required rows="5" cols="40" name="verse[content]" placeholder="Paste Translation Here:"><%=@verse.content%></textarea>
 
   <h4>Topics:</h4>
   <% @topics.each do |t| %>
-    <p><input type="checkbox" value="<%=t.id%>" name="verse[topic_ids][]" <%= 'checked' if @verse.topics.ids.include?(t.id)%>><%=t.name%></input></p>
+    <p><input type="checkbox" value="<%=t.id%>" name="verse[topic_ids][]" <%= 'checked' if @verse.topics.ids.include?(t.id)%>><%=t.name%> <i><%="*Not Authorized To Edit*" if !t.users.include?(current_user)%></i></input></p>
   <% end %>
+   <i> *Unauthorized edits will not be saved*</i>
+
 
   <h4>Create New Topic:</h4>
   <input type="text" size="30" name="new_topic"><br><br>
 
   <h1><input type="submit" id="submit" value="Save Changes"></h1>
-
-
 </form>
+
+<form method="post" action="/verse/<%=@verse.id%>"><input type="hidden" name="_method" value="delete"><input type="submit" value="Delete Verse"></form><br><br>
+
+
+
+

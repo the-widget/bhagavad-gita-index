@@ -11,8 +11,10 @@ class ApplicationController < Sinatra::Base
   end
 ######## HOMEPAGE ########
   get '/' do
+    @message = params[:message] if params[:message]
+    @user = current_user if current_user
     @topics = Topic.all.to_a
-    if is_logged_in
+    if !!@user && is_logged_in
       erb :index
     else
       erb :homepage
@@ -35,7 +37,7 @@ class ApplicationController < Sinatra::Base
 ######## LOGIN/LOGOUT ########
   get '/login' do
     if is_logged_in
-      redirect "/index"
+      redirect "/"
     else
       erb :"/users/login"
     end
@@ -63,23 +65,62 @@ class ApplicationController < Sinatra::Base
 ######## TOPICS ########
 
   get '/topics/new' do
+    if !is_logged_in
+      message = "* You Must Be Logged In To Contribute*"
+      redirect "/?message=#{message}"
+    end
     erb :"topics/new"
   end
 
   post '/topics' do
-    @topic = Topic.new(name: params["name"])
-    erb :topics, locals: {message: "Topic Created!"}
+    @topic = Topic.new(name: params["name"].capitalize)
+    if !!Topic.find_by(name: @topic.name)
+      message = "* Topic Already Exists. *"
+      redirect "/topics/#{@topic.slug}/show?message=#{message}"
+    else
+      @topic.users << current_user
+      @topic.save
+      message = "* Created New Topic! Click 'Edit Topic' to Associate Existing Verses. Or, 'Add A New Verse' to the Associated Topic. *"
+      redirect "/topics/#{@topic.slug}/show?message=#{message}"
+    end
   end
 
   get '/topics' do
-    @topics = Topic.all
+    @message = params[:message] if params[:message]
+    @topics = Topic.all.to_a
+    @topics.sort!{ |a,b| a.name <=> b.name }
     erb :"topics/index"
   end
 
+  get '/topics/:slug/add_verse' do
+    @message = params[:message] if params[:message]
+    @topic = Topic.find_by_slug(params[:slug])
+    if not_allowed_topics || !@topic
+      message = "* You do not have permission to edit this topic. *"
+      redirect "/topics/#{params[:slug]}/show?message=#{message}"
+    else
+      erb :"topics/add_verse"
+    end
+  end
+
+  post '/topics/:slug/add_verse' do
+    @topic = Topic.find_by_slug(params[:slug])
+    @verse = Verse.new(location: "#{params["verse"]["chapter"]}.#{params["verse"]["sloka"]}", content: params["verse"]["content"])
+    if !!Verse.find_by(location: @verse.location)
+      message = "* That Verse Already Exists! *"
+      redirect "/topics/#{@topic.slug}/add_verse?message=#{message}"
+    else
+      @topic.verses << @verse
+      message = "* Successfully Added Verse to Topic *"
+      redirect "topics/#{@topic.slug}/show?message=#{message}"
+    end
+  end
+
   get '/topics/:slug/show' do
+    @message = params[:message] if params[:message]
     @topic = Topic.find_by_slug(params[:slug])
     if @topic
-      @verses = @topic.verses
+      @verses = @topic.verses.to_a.sort!{|a,b| a.location.to_f <=> b.location.to_f}
       erb :"topics/show"
     else
       redirect '/'
@@ -88,7 +129,10 @@ class ApplicationController < Sinatra::Base
 
   get '/topics/:slug/edit' do
     @topic = Topic.find_by_slug(params[:slug])
-    if @topic
+    if not_allowed_topics
+      message = "* You do not have permission to edit this topic. *"
+      redirect "/topics/#{params[:slug]}/show?message=#{message}"
+    elsif @topic
       @verses = Verse.all
       erb :"topics/edit"
     else
@@ -112,39 +156,96 @@ class ApplicationController < Sinatra::Base
     redirect "/topics/#{@topic.slug}/show"
   end
 
+  delete '/topics/:slug' do
+    @topic = Topic.find_by_slug(params[:slug])
+    message = "* '#{@topic.name}' successfully deleted *"
+    @topic.delete
+    redirect "/topics?message=#{message}"
+  end
+
+  post '/topic/:slug/authorization' do
+    @topic = Topic.find_by_slug(params[:slug])
+    unless @topic.users.include?(current_user)
+      @topic.users << current_user
+      message = "* Congratulations! You May Now Contribute To This Topic. *"
+    else
+      message = "* You Already Authorized To Edit This Topic. *"
+    end
+    redirect "/topics/#{@topic.slug}/show?message=#{message}"
+  end
+
+
+
 
 ######## VERSES ########
 
   get '/verses/new' do
-    @topics = Topic.all
-    erb :"verses/new"
+    @message = params[:message] if params[:message]
+    if !current_user || !is_logged_in
+      message = "* You Must Be Logged In To Contribute*"
+      redirect "/?message=#{message}"
+    else
+      @topics = Topic.all
+      erb :"verses/new"
+    end
   end
   
   post '/verse' do 
-    @location = "#{params["verse"]["chapter"]}:#{params["verse"]["sloka"]}"
+    @verse = Verse.new(location: "#{params["verse"]["chapter"]}.#{params["verse"]["sloka"]}", content: params["verse"]["content"])
     @topic_ids = params["verse"]["topic_ids"]
-    @verse = Verse.create(location: @location, content: params["verse"]["content"])
-    unless !@topic_ids
+    if !!Verse.find_by(location: @verse.location)
+      message = "* That Verse Already Exists! *"
+      redirect "/verses/new?message=#{message}"
+    elsif @topic_ids
       Topic.all.each do |topic|
         if @topic_ids.include?(topic.id.to_s)
-          @verse.topics << topic unless @verse.topics.include?(topic)
+          @verse.topics << topic unless !topic.users.include?(current_user)
         end
       end
     end
     if params["new_topic"].size != 0
-      @verse.topics << Topic.create(name: params["new_topic"])
+      @verse.topics << Topic.create(name: params["new_topic"].capitalize)
+      Topic.last.users << current_user
     end
     @verse.save
     redirect "verses/#{@verse.id}/show"
   end
+
+  patch '/verse/:id' do
+    @verse = Verse.find_by_id(params[:id])
+    @verse.update(location: "#{params["verse"]["chapter"]}.#{params["verse"]["sloka"]}", content: params["verse"]["content"])
+    @verse.topics.clear
+    Topic.all.each do |topic|
+      if params["verse"]["topic_ids"].include?(topic.id.to_s)
+        @verse.topics << topic unless !topic.users.include?(current_user)
+      end
+    end
+    if params["new_topic"].size != 0
+      @verse.topics << Topic.create(name: params["new_topic"].capitalize)
+      Topic.last.users << current_user
+    end
+    @verse.save
+    redirect "verses/#{@verse.id}/show"
+  end
+
+  delete '/verse/:id' do
+    @verse = Verse.find_by_id(params[:id])
+    message = "* Successfully deleted verse #{@verse.location} *"
+    @verse.delete
+    redirect "/verses?message=#{message}"
+  end
+
   
   get '/verses' do
-    @verses = Verse.all
+    @message = params[:message] if params[:message]
+    @verses = Verse.all.to_a
+    @verses.sort!{|a,b| a.location.to_i <=> b.location.to_i}
     erb :"/verses/index"
   end
     
   get '/verses/:id/show' do
     @verse = Verse.find(params[:id])
+    @message = params[:message] if params[:message]
     if @verse
       erb :'/verses/show'
     else
@@ -154,11 +255,12 @@ class ApplicationController < Sinatra::Base
 
   get '/verses/:id/edit' do
     @verse = Verse.find(params[:id])
-    if @verse
+    if !current_user || !is_logged_in
+      message = "-You do not have permission to edit this topic.-"
+      redirect "/verses/#{params[:id]}/show?message=#{message}"
+    elsif @verse
       @topics = Topic.all
       erb :'/verses/edit'
-    else
-      redirect '/'
     end
   end
 
@@ -173,32 +275,13 @@ class ApplicationController < Sinatra::Base
     def current_user
       User.find_by_id(session[:user_id])
     end
+
+    def not_allowed_topics
+      !current_user || !is_logged_in || !@topic.users.include?(current_user)
+    end
+
   end
 
+
 end
-
-
-
-
-
-
-#############NOTES#############
-# post '/topic' do
-#     # Do whatever you were doing
-#     message = "Topic Created!"
-#     redirect to '/index?message=#{message}'
-#   end
-
-#   get '/index'
-#     @message = params[:message] if params[:message]
-#     erb :index
-#   end 
-
-
-
-
-
-
-
-
 
