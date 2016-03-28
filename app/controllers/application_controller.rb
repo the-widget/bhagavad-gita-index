@@ -73,7 +73,7 @@ class ApplicationController < Sinatra::Base
   end
 
   post '/topics' do
-    @topic = Topic.new(name: params["name"].capitalize)
+    @topic = Topic.new(name: params["name"])
     if !!Topic.find_by(name: @topic.name)
       message = "* Topic Already Exists. *"
       redirect "/topics/#{@topic.slug}/show?message=#{message}"
@@ -133,7 +133,8 @@ class ApplicationController < Sinatra::Base
       message = "* You do not have permission to edit this topic. *"
       redirect "/topics/#{params[:slug]}/show?message=#{message}"
     elsif @topic
-      @verses = Verse.all
+      @verses = Verse.all.to_a
+      @verses.sort!{|a,b| a.location.to_i <=> b.location.to_i}
       erb :"topics/edit"
     else
       redirect '/'
@@ -204,7 +205,7 @@ class ApplicationController < Sinatra::Base
       end
     end
     if params["new_topic"].size != 0
-      @verse.topics << Topic.create(name: params["new_topic"].capitalize)
+      @verse.topics << Topic.create(name: params["new_topic"])
       Topic.last.users << current_user
     end
     @verse.save
@@ -221,7 +222,7 @@ class ApplicationController < Sinatra::Base
       end
     end
     if params["new_topic"].size != 0
-      @verse.topics << Topic.create(name: params["new_topic"].capitalize)
+      @verse.topics << Topic.create(name: params["new_topic"])
       Topic.last.users << current_user
     end
     @verse.save
