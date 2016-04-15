@@ -1,7 +1,7 @@
 <a href="/"><img src="https://farm2.staticflickr.com/1630/26010974126_687be28542.jpg"></a>
 
 <h1>Index of All Saved Verses - Sorted By Chapter </h1>
-<a href="/verses/new"><input type="submit" value="Add New Verse"></a>
+ <a href="/verses/new"><input type="<%= is_logged_in ? 'submit' : 'hidden' %>" value="Add New Verse"></a> 
 
   <h4> <%=  @message %> </h4>
 <%@verses.each do |verse|%>

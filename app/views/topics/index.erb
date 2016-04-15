@@ -1,6 +1,9 @@
 <h1><a href="/"><img src="https://farm2.staticflickr.com/1630/26010974126_687be28542.jpg"></a></h1>
 <%= @message %>
 
+ <a href="/verses/new"><input type="<%= is_logged_in ? 'submit' : 'hidden' %>" value="Add New Topic"></a> 
+
+
 <h1>Topics:</h1>
   <ul>
 <% @topics.each do |t| %>

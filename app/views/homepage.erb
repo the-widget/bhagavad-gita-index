@@ -7,7 +7,7 @@
 
 <h2>Featured Topics:</h2>
 <% unless @topics.empty? %>
-  <% @topics.each do |t| %>
+  <% @topics.first(7).each do |t| %>
     <h4><a href="/topics/<%=t.slug%>/show"><%= t.name %></a> - <%= t.verses.count %> associated verse(s)</h4>
   <% end %>
 <% else %>
